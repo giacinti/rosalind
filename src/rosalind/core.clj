@@ -160,6 +160,14 @@
          dataset# (clojure.java.io/resource (str '~name ".dataset.txt"))]
 
      (defn ~name [~file] ~@body)
-     (defn ~'run-sample [] (~name sample#))
-     (defn ~'run-dataset [] (~name dataset#))))
-     
+     (defn ~'-sample [] (~name sample#))
+     (defn ~'-dataset [] (~name dataset#))
+     (defn ~'-main [& args#]
+       (loop [a# args#]
+         (if (not (empty? a#))
+           (let [p# (first a#)]
+             (cond
+              (= p# "sample") (~'-sample)
+              (or (= p# "dataset") (= p# "data")) (~'-dataset)
+              :else (println "don't know what to do with " p#))
+             (recur (rest a#))))))))
