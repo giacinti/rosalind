@@ -26,14 +26,32 @@
                \T [(get vec 0) (get vec 1) (get vec 2) (inc (get vec 3))]
                (throw (Exception. "unexpected nucleotide character " base)))
              (rest str)))))
-           
 
-;; (defn -main [& args]
-;;   (let [str (rosalind.core/read_dataset (first args))
+;; (def-rosalind-main dnaV1 file
+;;   (let [str (rosalind.core/read_dataset file)
 ;;         vec (count_next_nucleotides [0 0 0 0] str)]
 ;;     (println (get vec 0) (get vec 1) (get vec 2) (get vec 3))))
 
+(defn -count-one-nucleotide [base] 
+  (condp = base
+    \A { \A 1, \C 0, \G 0, \T 0 }
+    \C { \A 0, \C 1, \G 0, \T 0 }
+    \G { \A 0, \C 0, \G 1, \T 0 }
+    \T { \A 0, \C 0, \G 0, \T 1 }
+    (throw (Exception. "unexpected nucleotide character " base))))
+
+(defn -sum-dna-hash [h1 h2]
+  { \A (+ (h1 \A) (h2 \A)),
+    \C (+ (h1 \C) (h2 \C)),
+    \G (+ (h1 \G) (h2 \G)),
+    \T (+ (h1 \T) (h2 \T)) })
+
+(defn count-nucleotides [dna-str]
+  (reduce -sum-dna-hash
+          (map -count-one-nucleotide
+               dna-str)))
+
 (def-rosalind-main dna file
-  (let [str (rosalind.core/read_dataset file)
-        vec (count_next_nucleotides [0 0 0 0] str)]
-    (println (get vec 0) (get vec 1) (get vec 2) (get vec 3))))
+  (count-nucleotides (rosalind.core/read-dataset file)))
+
+

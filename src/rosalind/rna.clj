@@ -1,8 +1,8 @@
 (ns rosalind.rna
-  (:require [rosalind.core :refer [def-rosalind-main read_dataset]]))
+  (:require [rosalind.core :refer [def-rosalind-main read-dataset]]))
 
-(defn dna2rna [dataset]
-  (clojure.string/replace dataset \T \U))
+(defn dna2rna [dna-str]
+  (clojure.string/replace dna-str \T \U))
 
 (def-rosalind-main rna file
-  (dna2rna (read_dataset file)))
+  (dna2rna (read-dataset file)))

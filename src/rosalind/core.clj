@@ -108,7 +108,7 @@
       (= str "UAG")
       (= str "UGA")))
 
-(defn read_dataset [filename]
+(defn read-dataset [filename]
   (trim-newline (slurp filename)))
 
 (defn dataset-seq [filename]
@@ -155,13 +155,18 @@
   [seq elm]  
   (some #(= elm %) seq))
 
-(defmacro def-rosalind-main [name file & body]
-  `(let [sample# (clojure.java.io/resource (str '~name ".sample.txt"))
-         dataset# (clojure.java.io/resource (str '~name ".dataset.txt"))]
+(defn sample-file [name]
+  (clojure.java.io/resource (str name ".sample.txt")))
 
+(defn data-file [name]
+  (clojure.java.io/resource (str name ".dataset.txt")))
+
+(defmacro def-rosalind-main [name file & body]
+  `(let [sample# (rosalind.core/sample-file '~name)
+         dataset# (rosalind.core/data-file '~name)]
      (defn ~name [~file] ~@body)
-     (defn ~'-sample [] (~name sample#))
-     (defn ~'-dataset [] (~name dataset#))
+     (defn ~'-sample [] (println (~name sample#)))
+     (defn ~'-dataset [] (println (~name dataset#)))
      (defn ~'-main [& args#]
        (loop [a# args#]
          (if (not (empty? a#))
