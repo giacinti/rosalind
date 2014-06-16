@@ -51,7 +51,9 @@
           (map -count-one-nucleotide
                dna-str)))
 
-(def-rosalind-main dna file
-  (count-nucleotides (rosalind.core/read-dataset file)))
+(defn -rosalind-main [file]
+  (let [r (count-nucleotides (rosalind.core/read-dataset file))]
+    (str (r \A) " " (r \C) " " (r \G) " " (r \T))))
 
+(def-rosalind-main dna -rosalind-main)
 

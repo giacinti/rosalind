@@ -1,5 +1,6 @@
 (ns rosalind.core
   (:use [clojure.java.io])
+  (:require [clojure.test :refer [deftest is testing]])
   (:require [clojure.string :refer [trim-newline]]))
 
 (import '(java.io BufferedReader StringReader))
@@ -155,18 +156,24 @@
   [seq elm]  
   (some #(= elm %) seq))
 
-(defn sample-file [name]
-  (clojure.java.io/resource (str name ".sample.txt")))
+(defn sample-data-file [name]
+  (clojure.java.io/resource (str "samples/" name ".txt")))
+
+(defn sample-output-file [name]
+  (clojure.java.io/resource (str "samples/" name "-output.txt")))
 
 (defn data-file [name]
-  (clojure.java.io/resource (str name ".dataset.txt")))
+  (clojure.java.io/resource (str "data/" name ".txt")))
 
-(defmacro def-rosalind-main [name file & body]
-  `(let [sample# (rosalind.core/sample-file '~name)
+(defmacro def-rosalind-main [name mainf]
+  `(let [sample# (rosalind.core/sample-data-file '~name)
+         smpout# (rosalind.core/sample-output-file '~name)
          dataset# (rosalind.core/data-file '~name)]
-     (defn ~name [~file] ~@body)
-     (defn ~'-sample [] (println (~name sample#)))
-     (defn ~'-dataset [] (println (~name dataset#)))
+
+     (defn ~'-sample [] (println (~mainf sample#)))
+
+     (defn ~'-dataset [] (println (~mainf dataset#)))
+
      (defn ~'-main [& args#]
        (loop [a# args#]
          (if (not (empty? a#))
@@ -175,4 +182,10 @@
               (= p# "sample") (~'-sample)
               (or (= p# "dataset") (= p# "data")) (~'-dataset)
               :else (println "don't know what to do with " p#))
-             (recur (rest a#))))))))
+             (recur (rest a#))))))
+
+     (deftest ~'-main-test
+       (testing '~name
+         (is (= (~mainf sample#) (trim-newline (slurp smpout#))))))
+     ))
+

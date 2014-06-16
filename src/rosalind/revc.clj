@@ -26,5 +26,7 @@
   (apply str (map nucleotide_complement
                   (clojure.string/reverse dna))))
 
-(def-rosalind-main revc file
+(defn -rosalind-main [file]
   (reverse-complement (read-dataset file)))
+
+(def-rosalind-main revc -rosalind-main)
