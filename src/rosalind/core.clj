@@ -163,7 +163,7 @@
   (clojure.java.io/resource (str "samples/" name "-output.txt")))
 
 (defn data-file [name]
-  (clojure.java.io/resource (str "data/" name ".txt")))
+  (clojure.java.io/resource (str "data/rosalind_" name ".txt")))
 
 (defmacro def-rosalind-main [name mainf]
   `(let [sample# (rosalind.core/sample-data-file '~name)
@@ -188,4 +188,21 @@
        (testing '~name
          (is (= (~mainf sample#) (trim-newline (slurp smpout#))))))
      ))
+
+
+; inspired from http://stackoverflow.com/questions/3906831/how-do-i-generate-memoized-recursive-functions-in-clojure
+(defmacro memoize-fn
+  "Produces a memoized anonymous function that can recursively call itself."
+  [fn-name & fn-args]
+  `(with-local-vars
+      [~fn-name (memoize
+                (fn ~@fn-args))]
+     (.bindRoot ~fn-name @~fn-name)
+    @~fn-name))
+
+(defmacro def-mem-rec-fn
+  "define a memoized recursive function."
+  [name & args]
+  `(def ~name
+     (memoize-fn ~name ~@args)))
 
